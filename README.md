@@ -198,10 +198,10 @@ It should output something like
             ],
             "contacts" : {
               "emails" : {
-                "value" : " paulo@campus.ul.pt"
+                "value" : " info@igot.ul.pt"
               },
               "organization" : "IGOT",
-              "name" : "Paulo Morgado"
+              "name" : "Name Lastname"
             },
             "type" : "dataset",
             "updated" : "2023-08-10T10:56:07.525921623Z",
