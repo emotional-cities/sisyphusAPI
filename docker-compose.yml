@@ -40,6 +40,9 @@ services:
 
     environment:
       ENV_STATE: "dev"
+      DEV_ELASTIC_HOST: "elastic"
+      DEV_ELASTIC_PORT: "9200"
+      DEV_ELASTIC_INDEX: "ec_catalog"
       DEV_LOG_PATH: "./logs"
       DEV_LOG_FILENAME: "sisyphus.log"
       DEV_LOG_LEVEL: "DEBUG"

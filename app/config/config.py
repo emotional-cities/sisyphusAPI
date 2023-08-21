@@ -15,6 +15,9 @@ class GlobalConfig(BaseSettings):
     # having the same name, that will take precedence.
 
     ENV_STATE: Optional[str] = Field("dev", env="ENV_STATE")
+    ELASTIC_HOST: Optional[str] = Field("dev", env="ELASTIC_HOST")
+    ELASTIC_PORT: Optional[str] = Field("dev", env="ELASTIC_PORT")
+    ELASTIC_INDEX: Optional[str] = Field("dev", env="ELASTIC_INDEX")
     LOG_PATH: Optional[str] = Field("./logs", env="LOG_PATH")
     LOG_FILENAME: Optional[str] = Field("sisyphus.log", env="LOG_FILENAME")
     LOG_LEVEL: Optional[str] = Field("DEBUG", env="LOG_ROTATION")
@@ -33,20 +36,14 @@ class DevConfig(GlobalConfig):
 
     ROOT_PATH: Optional[str] = Field(None, env="DEV_ROOT_PATH")
     LOG_LEVEL: Optional[str] = Field(None, env="DEV_LOG_LEVEL")
-    SISYPHUS_DB_SERVER_HOST: Optional[str] = Field(
-        None, env="DEV_SISYPHUS_DB_SERVER_HOST"
+    ELASTIC_HOST: Optional[str] = Field(
+        None, env="DEV_ELASTIC_HOST"
     )
-    SISYPHUS_DB_SERVER_PORT: Optional[str] = Field(
-        None, env="DEV_SISYPHUS_DB_SERVER_PORT"
+    ELASTIC_PORT: Optional[str] = Field(
+        None, env="DEV_ELASTIC_PORT"
     )
-    SISYPHUS_DB_NAME: Optional[str] = Field(
-        None, env="DEV_SISYPHUS_DB_NAME"
-    )
-    SISYPHUS_DB_USER: Optional[str] = Field(
-        None, env="DEV_SISYPHUS_DB_USER"
-    )
-    SISYPHUS_DB_PASSWORD: Optional[str] = Field(
-        None, env="DEV_SISYPHUS_DB_PASSWORD"
+    ELASTIC_INDEX: Optional[str] = Field(
+        None, env="DEV_ELASTIC_INDEX"
     )
 
 
@@ -56,22 +53,15 @@ class ProdConfig(GlobalConfig):
 
     ROOT_PATH: Optional[str] = Field(None, env="PROD_ROOT_PATH")
     LOG_LEVEL: Optional[str] = Field(None, env="PROD_LOG_LEVEL")
-    SISYPHUS_DB_SERVER_HOST: Optional[str] = Field(
-        None, env="PROD_SISYPHUS_DB_SERVER_HOST"
+    ELASTIC_HOST: Optional[str] = Field(
+        None, env="PROD_ELASTIC_HOST"
     )
-    SISYPHUS_DB_SERVER_PORT: Optional[str] = Field(
-        None, env="PROD_SISYPHUS_DB_SERVER_PORT"
+    ELASTIC_PORT: Optional[str] = Field(
+        None, env="PROD_ELASTIC_PORT"
     )
-    SISYPHUS_DB_NAME: Optional[str] = Field(
-        None, env="PROD_SISYPHUS_DB_NAME"
+    ELASTIC_INDEX: Optional[str] = Field(
+        None, env="PROD_ELASTIC_INDEX"
     )
-    SISYPHUS_DB_USER: Optional[str] = Field(
-        None, env="PROD_SISYPHUS_DB_USER"
-    )
-    SISYPHUS_DB_PASSWORD: Optional[str] = Field(
-        None, env="PROD_SISYPHUS_DB_PASSWORD"
-    )
-
 
 class FactoryConfig:
     """Returns a config instance dependending on the ENV_STATE variable."""
