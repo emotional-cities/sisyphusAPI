@@ -55,7 +55,12 @@ async def postMetadata(
         document['m'] = 'API'
 
         # SAVE
-        elastic.index(index=cfg.ELASTIC_INDEX, id=record_id, body=json.dumps(document))
+        try:
+            elastic.index(index=cfg.ELASTIC_INDEX, id=record_id, body=json.dumps(document))
+        except Exception as e: 
+            logger.debug(e)
+            return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={})
+
 
 @router.put("/{record_id}", status_code=status.HTTP_200_OK)
 async def putMetadata(
