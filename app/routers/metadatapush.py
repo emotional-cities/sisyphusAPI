@@ -88,11 +88,35 @@ async def putMetadata(
         # SAVE
         elastic.index(index=cfg.ELASTIC_INDEX, id=record_id, body=json.dumps(document))
 
-@router.delete("/{record_id}", status_code=status.HTTP_501_NOT_IMPLEMENTED)
+@router.delete("/{record_id}", status_code=status.HTTP_200_OK)
 async def deleteMetadata(
     record_id: str,
+    document: dict = Body(...),
     elastic: get_db = Depends()):
-        pass
+        try:
+            resp = elastic.get(index=cfg.ELASTIC_INDEX, id=record_id)
+            if 'm' in resp['_source'].keys() and resp['_source']['m'] == 'API':
+                pass
+            else:
+                return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"message": "You are not allowed to change this record"})
+        except NotFoundError:
+            # You cannot PUT on a not existing id
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "The ID does not exists"})
+
+        # SAVE
+        elastic.delete(index=cfg.ELASTIC_INDEX, id=record_id)
+
+
+@router.get("/", response_class=JSONResponse, status_code=status.HTTP_200_OK)
+async def bulkGetMetadata(
+    elastic: get_db = Depends()):
+        try:
+            resp = elastic.get(index=cfg.ELASTIC_INDEX)
+        except NotFoundError:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=None)
+
+        return JSONResponse(status_code=status.HTTP_200_OK, content=resp['_source'])
+
 
 #                   ====-_      _-====___
 #            _--^^^#####//      \#####^^^--_
