@@ -91,7 +91,6 @@ async def putMetadata(
 @router.delete("/{record_id}", status_code=status.HTTP_200_OK)
 async def deleteMetadata(
     record_id: str,
-    document: dict = Body(...),
     elastic: get_db = Depends()):
         try:
             resp = elastic.get(index=cfg.ELASTIC_INDEX, id=record_id)
@@ -108,14 +107,41 @@ async def deleteMetadata(
 
 
 @router.get("/", response_class=JSONResponse, status_code=status.HTTP_200_OK)
-async def bulkGetMetadata(
+async def fetchAllMetadata(
     elastic: get_db = Depends()):
         try:
-            resp = elastic.get(index=cfg.ELASTIC_INDEX)
+            page = elastic.search(
+                index=cfg.ELASTIC_INDEX,
+                scroll='2m',  # Durata della finestra di scroll. Puoi aumentarla se necessario.
+                size=10000,  # Numero di documenti per richiesta. Modifica secondo le tue esigenze.
+                body={"query": {"match_all": {}}})
+            
+            # ID dello scroll per la prossima pagina
+            sid = page['_scroll_id']
+            
+            scroll_size = len(page['hits']['hits'])
+            
+            all_docs = []
+
+            while scroll_size > 0:
+                # Recupera gli attuali risultati della pagina
+                all_docs.extend(page['hits']['hits'])
+
+                # Avanza alla prossima pagina
+                page = elastic.scroll(scroll_id=sid, scroll='2m')
+
+                # Aggiorna lo scroll ID e la dimensione dello scroll
+                sid = page['_scroll_id']
+                scroll_size = len(page['hits']['hits'])
+
+            result = []
+            for doc in all_docs:
+                result.append(doc['_source'])
+
         except NotFoundError:
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content=None)
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content=resp['_source'])
+        return JSONResponse(status_code=status.HTTP_200_OK, content=result)
 
 
 #                   ====-_      _-====___
