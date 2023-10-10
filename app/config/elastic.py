@@ -7,7 +7,8 @@ logger = create_logger(name="app.config.client")
 def get_db():
     # Create the client instance
     client = Elasticsearch(
-        f"http://{cfg.ELASTIC_HOST}:{cfg.ELASTIC_PORT}"
+        f"http://{cfg.ELASTIC_HOST}:{cfg.ELASTIC_PORT}",
+        opaque_id="sisyphusAPI"
     )
 
     logger.debug(client.info())
