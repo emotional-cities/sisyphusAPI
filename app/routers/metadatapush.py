@@ -2,6 +2,7 @@ import json
 from typing import Optional
 from fastapi import APIRouter, Depends, Body, HTTPException, status
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from datetime import date
 from enum import Enum
 from app.config.logging import create_logger
@@ -9,6 +10,7 @@ from app.config.elastic import get_db
 from elasticsearch import NotFoundError
 from app.utils.app_exceptions import AppException
 from app.utils.ogcarec_utils import validate
+from app.schemas.recordgeojson import RecordGeoJSON
 from app.config.config import configuration as cfg
 
 logger = create_logger(name="app.config.client")
@@ -47,9 +49,10 @@ async def postMetadata(
             pass
 
         # VALIDATION
-        valid= validate(record_id, document)
-        if valid['status'] == False:
-            return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": valid['reason']})
+        try:
+            RecordGeoJSON.from_json(json.dumps(document))
+        except ValidationError as exc:
+            return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": repr(exc.errors()[0])})
 
         # ADD API MARK
         document['m'] = 'API'
@@ -78,9 +81,10 @@ async def putMetadata(
             return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "The ID does not exists"})
 
         # VALIDATION
-        valid= validate(record_id, document)
-        if valid['status'] == False:
-            return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": valid['reason']})
+        try:
+            RecordGeoJSON.from_json(json.dumps(document))
+        except ValidationError as exc:
+            return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": repr(exc.errors()[0])})
 
         # ADD API MARK
         document['m'] = 'API'

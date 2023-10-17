@@ -43,8 +43,8 @@ def transform(input_data):
     output_data["@timestamp"] = current_timestamp
     output_data["properties"]["created"] = current_timestamp
     output_data["properties"]["updated"] = current_timestamp
-    output_data["properties"]["title"] = "Example test data"
-    output_data["properties"]["description"] = "Example measurements around the city of Lisbon"
+    output_data["properties"]["title"] = "TBD"
+    output_data["properties"]["description"] = "TBD"
     output_data["properties"]["publisher"] = "https://byteroad.net/"
     output_data["properties"]["contactPoint"] = "Byte Road"
 
@@ -87,7 +87,3 @@ def transform(input_data):
 
     return output_data
 
-# input_str = '''...'''  # (your input JSON as a string here)
-# input_json = json.loads(input_str)
-# output_json = transform(input_json)
-# print(json.dumps(output_json, indent=4))
