@@ -1,10 +1,9 @@
 from typing import List, Union, Optional, Dict, Any
 from pydantic import BaseModel, HttpUrl, constr
-from datetime import datetime
 import json
 
-DatePattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}$")
-TimestampPattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$")
+DatePattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}Z)?$")
+TimestampPattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$")
 IntervalItemPattern = Union[DatePattern, TimestampPattern, str]  # Note: Added "str" for ".."
 
 class Time(BaseModel):
@@ -14,7 +13,7 @@ class Time(BaseModel):
     resolution: Optional[str]  # Since no constraints were mentioned other than an example.
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Time":
@@ -25,7 +24,7 @@ class Point(BaseModel):
     coordinates: List[float]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Point":
@@ -36,7 +35,7 @@ class MultiPoint(BaseModel):
     coordinates: List[List[float]]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "MultiPoint":
@@ -47,7 +46,7 @@ class LineString(BaseModel):
     coordinates: List[List[float]]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "LineString":
@@ -58,7 +57,7 @@ class MultiLineString(BaseModel):
     coordinates: List[List[List[float]]]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "MultiLineString":
@@ -69,7 +68,7 @@ class Polygon(BaseModel):
     coordinates: List[List[List[float]]]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Polygon":
@@ -80,7 +79,7 @@ class MultiPolygon(BaseModel):
     coordinates: List[List[List[List[float]]]]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "MultiPolygon":
@@ -100,7 +99,7 @@ class GeometryCollection(BaseModel):
     ]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "GeometryCollection":
@@ -137,7 +136,7 @@ class Language(BaseModel):
     dir: str = "ltr"  # Default set to "ltr"
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Language":
@@ -151,10 +150,10 @@ class Concept(BaseModel):
 
 class Theme(BaseModel):
     concepts: List[Concept]
-    scheme: str
+    scheme: str = 'https://www.eionet.europa.eu/gemet/en/themes/'
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Theme":
@@ -168,11 +167,11 @@ class Link(BaseModel):
     title: Optional[str]
     templated: Optional[bool]
     variables: Optional[Dict[str, Any]]
-    created: Optional[datetime]
-    updated: Optional[datetime]
+    created: Optional[DatePattern]
+    updated: Optional[DatePattern]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Link":
@@ -182,7 +181,7 @@ class Roles(BaseModel):
     roles: List[str]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Roles":
@@ -219,7 +218,7 @@ class Contact(BaseModel):
     roles: Optional[Roles]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "Contact":
@@ -230,8 +229,8 @@ class ExternalId(BaseModel):
     value: str
 
 class Properties(BaseModel):
-    created: Optional[datetime]
-    updated: Optional[datetime]
+    created: Optional[DatePattern]
+    updated: Optional[DatePattern]
     type: constr(max_length=64)
     title: str
     description: Optional[str]
@@ -266,7 +265,7 @@ class RecordGeoJSON(BaseModel):
     links: List[Link]
 
     def to_json(self) -> str:
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), default=str)
 
     @classmethod
     def from_json(cls, json_str: str) -> "RecordGeoJSON":

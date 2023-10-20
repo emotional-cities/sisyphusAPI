@@ -1,11 +1,11 @@
-from typing import Optional
+import json
 from fastapi import APIRouter, Depends, UploadFile, HTTPException, status
 from fastapi.responses import JSONResponse
-from datetime import date
-from enum import Enum
 from app.config.logging import create_logger
 from app.config.elastic import get_db
 from app.utils.csv_utils import csv_to_oarec
+from app.config.config import configuration as cfg
+
 
 logger = create_logger(name="app.config.client")
 
@@ -28,6 +28,17 @@ async def importMetadata(
         lines = content_as_string.splitlines()
         results = csv_to_oarec(lines)
     else:
-        raise HTTPException(status_code=400, detail="Invalid file type")
+        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={})
 
+    print(results)
+
+    try:
+        for row in results:
+            record_id = row["id"]
+            elastic.index(index=cfg.ELASTIC_INDEX, id=record_id, body=json.dumps(row))
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": repr(e)})
+
+
+    # return JSONResponse(status_code=status.HTTP_201_CREATED, content="Record inserted ")
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=results)

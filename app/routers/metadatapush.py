@@ -1,15 +1,10 @@
 import json
-from typing import Optional
-from fastapi import APIRouter, Depends, Body, HTTPException, status
+from fastapi import APIRouter, Depends, Body, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from datetime import date
-from enum import Enum
 from app.config.logging import create_logger
 from app.config.elastic import get_db
 from elasticsearch import NotFoundError
-from app.utils.app_exceptions import AppException
-from app.utils.ogcarec_utils import validate
 from app.schemas.recordgeojson import RecordGeoJSON
 from app.config.config import configuration as cfg
 
