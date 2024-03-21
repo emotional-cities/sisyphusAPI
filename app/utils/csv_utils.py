@@ -1,7 +1,7 @@
 import csv
 import json
 import re
-from app.schemas.recordgeojson import RecordGeoJSON
+from app.schemas.recordgeojson import RecordGeoJSON, Theme, Concept
 from datetime import datetime
 
 def csv_to_json(csv_file_content):
@@ -78,43 +78,139 @@ def transform(input_data):
 
     # Add fields directly from the input JSON
     output_data["id"] = input_data["id"]
-    output_data["properties"]["license"] = input_data["license"]
+    if(input_data["license"]):
+        output_data["properties"]["license"] = input_data["license"]
+    else:
+        output_data["properties"]["license"] = "other"
     output_data["properties"]["title"] = input_data["title"]
     output_data["properties"]["description"] = input_data["description"]
     output_data["properties"]["keywords"] = process_comma_separated_string(input_data["keywords"])
     themes = process_comma_separated_string(input_data["themes"])
+    output_data["properties"]["themes"] = []
+    themes_index = 0
     for row in themes:
-        if(contains_url(row)):
-            output_data["properties"]["themes"]["scheme"] = row
-            output_data["properties"]["themes"]["concepts"] = []
+        if(row > ''):
+            if(len(output_data["properties"]["themes"]) <= themes_index):
+                output_data["properties"]["themes"].append({"scheme" : 'https://www.eionet.europa.eu/gemet/en/themes/', "concepts" : []})
+            if(contains_url(row)):
+                output_data["properties"]["themes"][themes_index]["concepts"].append({"id" : "", "url" : row})
+            else:
+                output_data["properties"]["themes"][themes_index]["concepts"].append({"id" : row})
+            themes_index += 1
 
     output_data["properties"]["contacts"] = [{"name": input_data["contactPoint_name"]}]
-    output_data["time"] = {
-        "resolution": "P1D",
-        "interval": json.loads(input_data["temporal_interval"])
-    }
+    if(input_data["temporal_interval"] and input_data["temporal_interval"] > ''):
+        output_data["time"] = {
+            "resolution": "P1D",
+            "interval": json.loads(input_data["temporal_interval"])
+        }
+    else:
+        output_data["time"] = {}
+
     output_data["geometry"] = {
         "coordinates": json.loads(input_data["geometry_coordinates"]),
         "type": "Polygon"
     }
-    output_data["links"] = [
-        {
-            "type": "application/json",
-            "rel": "root",
-            "title": "The landing page of this server as JSON",
-            "href": "https://emotional.byteroad.net?f=json"
-        },
-        # ... (you can continue to add more links as needed)
-    ]
-
-    # Add associations
-    temp_data = {
-        "href": f"https://emotional.byteroad.net/collections/masked/items/{input_data['id']}?f=json",
-        "rel": "item",
-        "title": "Link to the feature in JSON format",
-        "type": "application/geo+json"
-    }
-    output_data["properties"]["associations"] = [temp_data]
+    if(input_data["public"] == "YES"):
+        output_data["links"] = [
+            {
+                "type": "application/json",
+                "rel": "root",
+                "title": "The landing page of this server as JSON",
+                "href": "https://emotional.byteroad.net?f=json"
+            },
+            {
+                "type": "application/json",
+                "rel": "self",
+                "title": "This document as JSON",
+                "href": f"https://emotional.byteroad.net/collections/ec_catalog/{input_data['id']}?f=json"
+            },
+            {
+                "href": f"https://emotional.byteroad.net/collections/{input_data['id']}?f=json",
+                "rel": "item",
+                "title": f"OGC API Features for {input_data['id']}",
+                "type": "application/geo+json"
+            },
+            {
+                "href": f"https://emotional.byteroad.net/collections/{input_data['id']}/tiles?f=json",
+                "rel": "item",
+                "title": f"OGC API Tiles for {input_data['id']}",
+                "type": "application/geo+json"
+            },
+            {
+                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geojson",
+                "rel": "item",
+                "title": f"GeoJson download link for {input_data['id']}",
+                "type": "application/geo+json"
+            },
+            {
+                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geoparquet",
+                "rel": "item",
+                "title": f"GeoParquet download link for {input_data['id']}",
+                "type": "application/vnd.apache.parquet"
+            },
+            {
+                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geopackage",
+                "rel": "item",
+                "title": f"GeoPackage download link for {input_data['id']}",
+                "type": "application/x-sqlite3"
+            },
+            {
+                "rel": "item",
+                "type": "image/png",
+                "title": "OGC Web Map Service (WMS)",
+                "href": "https://emotional.byteroad.net/geoserver/ows?service=WMS&version=1.3.0&request=GetMap&crs={crs}&bbox={bbox}&layers=" + input_data['id'] + "&width={width}&height={height}&format=image/png",
+                "templated": True,
+                "variables": {
+                    "crs": {
+                    "description": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                    "type": "string",
+                    "enum": [
+                        "EPSG:4326"
+                    ]
+                    },
+                    "bbox": {
+                    "description": "...",
+                    "type": "array",
+                    "items": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                    },
+                    "width": {
+                    "description": "...",
+                    "type": "number",
+                    "format": "integer",
+                    "minimum": 600,
+                    "maximum": 5000
+                    },
+                    "height": {
+                    "description": "...",
+                    "type": "number",
+                    "format": "integer",
+                    "minimum": 600,
+                    "maximum": 5000
+                    }
+                }
+            }
+        ]
+    else:
+        output_data["links"] = [
+            {
+                "type": "application/json",
+                "rel": "root",
+                "title": "The landing page of this server as JSON",
+                "href": "https://emotional.byteroad.net?f=json"
+            },
+            {
+                "type": "application/json",
+                "rel": "self",
+                "title": "This document as JSON",
+                "href": f"https://emotional.byteroad.net/collections/ec_catalog/{input_data['id']}?f=json"
+            }
+        ]
 
     # Is there a way to optimize this?
     return json.loads(RecordGeoJSON.from_json(json.dumps(output_data)).to_json(), object_hook=remove_nulls)

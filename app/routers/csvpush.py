@@ -40,5 +40,5 @@ async def importMetadata(
         return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"message": repr(e)})
 
 
-    # return JSONResponse(status_code=status.HTTP_201_CREATED, content="Record inserted ")
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=results)
+    return JSONResponse(status_code=status.HTTP_201_CREATED, content="Records inserted ")
+    # return JSONResponse(status_code=status.HTTP_201_CREATED, content=results)
