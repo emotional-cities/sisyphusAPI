@@ -65,7 +65,6 @@ def transform(input_data):
 
     # Add metadata from the KV filter
     current_timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    print(current_timestamp)
     output_data["recordCreated"] = current_timestamp
     output_data["recordUpdated"] = current_timestamp
     output_data["@timestamp"] = current_timestamp
@@ -78,6 +77,8 @@ def transform(input_data):
 
     # Add fields directly from the input JSON
     output_data["id"] = input_data["id"]
+    record_id = input_data["id"]
+
     if(input_data["license"]):
         output_data["properties"]["license"] = input_data["license"]
     else:
@@ -123,43 +124,43 @@ def transform(input_data):
                 "type": "application/json",
                 "rel": "self",
                 "title": "This document as JSON",
-                "href": f"https://emotional.byteroad.net/collections/ec_catalog/{input_data['id']}?f=json"
+                "href": "https://emotional.byteroad.net/collections/ec_catalog/%s?f=json" % record_id
             },
             {
-                "href": f"https://emotional.byteroad.net/collections/{input_data['id']}?f=json",
+                "href": "https://emotional.byteroad.net/collections/%s?f=json" % record_id,
                 "rel": "item",
-                "title": f"OGC API Features for {input_data['id']}",
+                "title": "OGC API Features for %s" % record_id,
                 "type": "application/geo+json"
             },
             {
-                "href": f"https://emotional.byteroad.net/collections/{input_data['id']}/tiles?f=json",
+                "href": "https://emotional.byteroad.net/collections/%s/tiles?f=json" % record_id,
                 "rel": "item",
-                "title": f"OGC API Tiles for {input_data['id']}",
+                "title": "OGC API Tiles for %s" % record_id,
                 "type": "application/geo+json"
             },
             {
-                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geojson",
+                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geojson" % record_id,
                 "rel": "item",
-                "title": f"GeoJson download link for {input_data['id']}",
+                "title": "GeoJson download link for %s" % record_id,
                 "type": "application/geo+json"
             },
             {
-                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geoparquet",
+                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geoparquet" %  record_id,
                 "rel": "item",
-                "title": f"GeoParquet download link for {input_data['id']}",
+                "title": "GeoParquet download link for %s" % record_id,
                 "type": "application/vnd.apache.parquet"
             },
             {
-                "href": f"https://emotional.byteroad.net/sisyphus/api/v1/dataset/{input_data['id']}?f=geopackage",
+                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geopackage" % record_id,
                 "rel": "item",
-                "title": f"GeoPackage download link for {input_data['id']}",
+                "title": "GeoPackage download link for %s" % record_id,
                 "type": "application/x-sqlite3"
             },
             {
                 "rel": "item",
                 "type": "image/png",
                 "title": "OGC Web Map Service (WMS)",
-                "href": "https://emotional.byteroad.net/geoserver/ows?service=WMS&version=1.3.0&request=GetMap&crs={crs}&bbox={bbox}&layers=" + input_data['id'] + "&width={width}&height={height}&format=image/png",
+                "href": "https://emotional.byteroad.net/geoserver/ows?service=WMS&version=1.3.0&request=GetMap&crs={crs}&bbox={bbox}&layers=" + record_id + "&width={width}&height={height}&format=image/png",
                 "templated": True,
                 "variables": {
                     "crs": {
@@ -208,7 +209,7 @@ def transform(input_data):
                 "type": "application/json",
                 "rel": "self",
                 "title": "This document as JSON",
-                "href": f"https://emotional.byteroad.net/collections/ec_catalog/{input_data['id']}?f=json"
+                "href": "https://emotional.byteroad.net/collections/ec_catalog/%s?f=json" % record_id
             }
         ]
 

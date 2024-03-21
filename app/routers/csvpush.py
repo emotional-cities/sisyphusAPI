@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from app.config.logging import create_logger
 from app.config.elastic import get_db
 from app.utils.csv_utils import csv_to_oarec
+from elasticsearch import NotFoundError
 from app.config.config import configuration as cfg
 
 
@@ -30,9 +31,10 @@ async def importMetadata(
     else:
         return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={})
 
-    print(results)
-
     try:
+        # Clean index
+
+        # Load new records
         for row in results:
             record_id = row["id"]
             elastic.index(index=cfg.ELASTIC_INDEX, id=record_id, body=json.dumps(row))
@@ -41,4 +43,24 @@ async def importMetadata(
 
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, content="Records inserted ")
-    # return JSONResponse(status_code=status.HTTP_201_CREATED, content=results)
+
+
+@router.delete("/{record_id}", status_code=status.HTTP_200_OK)
+async def deleteProtectedRecord(
+    record_id: str,
+    record_type: str,
+    record_owner: str,
+    elastic: get_db = Depends()):
+        try:
+            resp = elastic.get(index=cfg.ELASTIC_INDEX, id=record_id)
+            print(record_owner)
+            if resp['_source']['type'] == record_type and record_owner > '':
+                pass
+            else:
+                return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"message": "You are not allowed to change this record"})
+        except NotFoundError:
+            # You cannot PUT on a not existing id
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": "The ID does not exists"})
+
+        # SAVE
+        elastic.delete(index=cfg.ELASTIC_INDEX, id=record_id)

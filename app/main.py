@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.config.config import configuration as cfg
 from app.config.logging import create_logger
-from app.routers import metadatapush, csvpush
+from app.routers import metadatapush, csvpush, dataset
 from app.utils.app_exceptions import AppExceptionCase, app_exception_handler
 from app.utils.request_exceptions import (
     http_exception_handler,
@@ -44,6 +44,7 @@ def create_app() -> FastAPI:
 
     sisyphusapi.include_router(metadatapush.router)
     sisyphusapi.include_router(csvpush.router)
+    sisyphusapi.include_router(dataset.router)
 
     app.mount("/sisyphus/api/v1", sisyphusapi)
 
