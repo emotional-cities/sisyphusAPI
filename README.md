@@ -53,6 +53,9 @@ DEV_LOG_LEVEL="DEBUG"
 DEV_LOG_ROTATION="500 MB"
 DEV_LOG_RETENTION="10 days"
 DEV_LOG_FORMAT="{time} {level} {message}"
+DEV_GEOPACKAGE_PATH="./"
+DEV_GEOPARQUET_PATH="./"
+DEV_GEOJSON_PATH="./"
 ```
 
 From the project folder, activate the [Poetry](https://python-poetry.org/) environment and start the API using the following command:
@@ -92,6 +95,9 @@ Note that default port used by docker container will be `80` instead of `5000`.
 |Variable Name                    |Description                         |
 |---------------------------------|------------------------------------|
 |ENV_STATE                        |Environment state (e.g., dev, prod) |
+|DEV_GEOPACKAGE_PATH:             |Path to geopackage folder           |
+|DEV_GEOPARQUET_PATH:             |Path to geopartquet folder          |
+|DEV_GEOJSON_PATH:                |Path to geoJSON folder              |
 
 ## API Endpoints
 

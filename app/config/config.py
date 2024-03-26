@@ -24,6 +24,9 @@ class GlobalConfig(BaseSettings):
     LOG_ROTATION: Optional[str] = Field("500 MB", env="LOG_ROTATION")
     LOG_RETENTION: Optional[str] = Field("10 days", env="LOG_RETENTION")
     LOG_FORMAT: Optional[str] = Field("{time} {level} {message}", env="LOG_FORMAT")
+    GEOPACKAGE_PATH: Optional[str] = Field("dev", env="GEOPACKAGE_PATH")
+    GEOPARQUET_PATH: Optional[str] = Field("dev", env="GEOPARQUET_PATH")
+    GEOJSON_PATH: Optional[str] = Field("dev", env="GEOJSON_PATH")
 
     class Config:
         """Loads the dotenv file."""
@@ -45,7 +48,15 @@ class DevConfig(GlobalConfig):
     ELASTIC_INDEX: Optional[str] = Field(
         None, env="DEV_ELASTIC_INDEX"
     )
-
+    GEOPACKAGE_PATH: Optional[str] = Field(
+        None, env="DEV_GEOPACKAGE_PATH"
+    )
+    GEOPARQUET_PATH: Optional[str] = Field(
+        None, env="DEV_GEOPARQUET_PATH"
+    )
+    GEOJSON_PATH: Optional[str] = Field(
+        None, env="DEV_GEOJSON_PATH"
+    )
 
 
 class ProdConfig(GlobalConfig):
@@ -61,6 +72,15 @@ class ProdConfig(GlobalConfig):
     )
     ELASTIC_INDEX: Optional[str] = Field(
         None, env="PROD_ELASTIC_INDEX"
+    )
+    GEOPACKAGE_PATH: Optional[str] = Field(
+        None, env="PROD_GEOPACKAGE_PATH"
+    )
+    GEOPARQUET_PATH: Optional[str] = Field(
+        None, env="PROD_GEOPARQUET_PATH"
+    )
+    GEOJSON_PATH: Optional[str] = Field(
+        None, env="PROD_GEOJSON_PATH"
     )
 
 class FactoryConfig:

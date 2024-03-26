@@ -49,6 +49,12 @@ services:
       DEV_LOG_ROTATION: "500 MB"
       DEV_LOG_RETENTION: "10 days"
       DEV_LOG_FORMAT: "{time} {level} {message}"
+      DEV_GEOPACKAGE_PATH: "/geopackage"
+      DEV_GEOPARQUET_PATH: "/geoparquet"
+      DEV_GEOJSON_PATH: "/geojson"
+    # volumes:
+      # - /geopackage:/geopackage
+      # - /geojson:/geojson
 
     ports:
       - 80:80
