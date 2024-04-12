@@ -139,19 +139,19 @@ def transform(input_data):
                 "type": "application/geo+json"
             },
             {
-                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geojson" % record_id,
+                "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geojson/%s.geojson" % record_id,
                 "rel": "item",
                 "title": "GeoJson download link for %s" % record_id,
                 "type": "application/geo+json"
             },
             {
-                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geoparquet" %  record_id,
+                "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geoparquet/%s.parquet" %  record_id,
                 "rel": "item",
                 "title": "GeoParquet download link for %s" % record_id,
                 "type": "application/vnd.apache.parquet"
             },
             {
-                "href": "https://emotional.byteroad.net/sisyphus/api/v1/dataset/%s?f=geopackage" % record_id,
+                "href": "https://emotional-cities.s3.eu-central-1.amazonaws.com/geopackage/%s.gpkg" % record_id,
                 "rel": "item",
                 "title": "GeoPackage download link for %s" % record_id,
                 "type": "application/x-sqlite3"
