@@ -2,7 +2,7 @@ from typing import List, Union, Optional, Dict, Any
 from pydantic import BaseModel, HttpUrl, constr
 import json
 
-DatePattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+\\-]\\d{2}:\\d{2})?)?$")
+DatePattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+\\-]\\d{2}:\\d{2}(?:Z)?)?)?$")
 TimestampPattern = constr(regex="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$")
 IntervalItemPattern = Union[DatePattern, TimestampPattern, str]  # Note: Added "str" for ".."
 
